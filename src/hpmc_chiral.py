@@ -34,7 +34,7 @@ class ChiralPair(hoomd.hpmc.pair.Pair):
             # TODO: Add entries to TypeParameterDict matching those in the C++
             # ParamType.
             hoomd.data.parameterdicts.TypeParameterDict(
-                A=float, B=float, r_cut=default_r_cut, len_keys=2
+                epsilon=float, alpha=float, theta=float, r_cut=default_r_cut, len_keys=2
             ),
         )
         self._add_typeparam(params)

@@ -49,10 +49,10 @@ class ChiralPairPotential : public PairPotential
 
         /// Convert a parameter set to a dictionary.
         pybind11::dict asDict();
-
-        // TODO: rename or add parameters as needed
-        LongReal m_A;
-        LongReal m_B;
+        
+        LongReal m_epsilon;
+        LongReal m_alpha;
+        LongReal m_theta;
         LongReal m_r_cut;
         };
 
@@ -63,7 +63,7 @@ class ChiralPairPotential : public PairPotential
 namespace detail
     {
 //! Export the ExampleUpdater class to python
-void export_ExamplePairPotential(pybind11::module& m);
+void export_ChiralPairPotential(pybind11::module& m);
 
     } // end namespace detail
 
