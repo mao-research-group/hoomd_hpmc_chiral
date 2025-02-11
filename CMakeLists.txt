@@ -2,7 +2,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.9 FATAL_ERROR)
 
 # Name the plugin project.
 # TODO: Set the project title to the name of your Python package.
-project(hpmc_energy LANGUAGES C CXX)
+project(hpmc_chiral LANGUAGES C CXX)
 
 # Find the installed HOOMD.
 find_package(HOOMD 5.0.0 REQUIRED)

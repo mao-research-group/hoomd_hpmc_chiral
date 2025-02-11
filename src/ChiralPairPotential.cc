@@ -1,19 +1,19 @@
 // Copyright (c) 2009-2025 The Regents of the University of Michigan.
 // Part of HOOMD-blue, released under the BSD 3-Clause License.
 
-#include "ExamplePairPotential.h"
+#include "ChiralPairPotential.h"
 
 namespace hoomd
     {
 namespace hpmc
     {
 
-ExamplePairPotential::ExamplePairPotential(std::shared_ptr<SystemDefinition> sysdef)
+ChiralPairPotential::ChiralPairPotential(std::shared_ptr<SystemDefinition> sysdef)
     : PairPotential(sysdef), m_params(m_type_param_index.getNumElements())
     {
     }
 
-LongReal ExamplePairPotential::energy(const LongReal r_squared,
+LongReal ChiralPairPotential::energy(const LongReal r_squared,
                                       const vec3<LongReal>& r_ij,
                                       const unsigned int type_i,
                                       const quat<LongReal>& q_i,
@@ -31,14 +31,14 @@ LongReal ExamplePairPotential::energy(const LongReal r_squared,
     return energy;
     }
 
-LongReal ExamplePairPotential::computeRCutNonAdditive(unsigned int type_i,
+LongReal ChiralPairPotential::computeRCutNonAdditive(unsigned int type_i,
                                                       unsigned int type_j) const
     {
     unsigned int param_index = m_type_param_index(type_i, type_j);
     return m_params[param_index].m_r_cut;
     }
 
-void ExamplePairPotential::setParamsPython(pybind11::tuple particle_types, pybind11::dict params)
+void ChiralPairPotential::setParamsPython(pybind11::tuple particle_types, pybind11::dict params)
     {
     auto pdata = m_sysdef->getParticleData();
     auto type_i = pdata->getTypeByName(particle_types[0].cast<std::string>());
@@ -51,7 +51,7 @@ void ExamplePairPotential::setParamsPython(pybind11::tuple particle_types, pybin
     notifyRCutChanged();
     }
 
-pybind11::dict ExamplePairPotential::getParamsPython(pybind11::tuple particle_types)
+pybind11::dict ChiralPairPotential::getParamsPython(pybind11::tuple particle_types)
     {
     auto pdata = m_sysdef->getParticleData();
     auto type_i = pdata->getTypeByName(particle_types[0].cast<std::string>());
@@ -60,7 +60,7 @@ pybind11::dict ExamplePairPotential::getParamsPython(pybind11::tuple particle_ty
     return m_params[param_index].asDict();
     }
 
-ExamplePairPotential::ParamType::ParamType(pybind11::dict params)
+ChiralPairPotential::ParamType::ParamType(pybind11::dict params)
     {
     // TODO: unpack per-type-pair quanties from the Python dictionary to the ParamType struct.
     m_A = params["A"].cast<LongReal>();
@@ -68,7 +68,7 @@ ExamplePairPotential::ParamType::ParamType(pybind11::dict params)
     m_r_cut = params["r_cut"].cast<LongReal>();
     }
 
-pybind11::dict ExamplePairPotential::ParamType::asDict()
+pybind11::dict ChiralPairPotential::ParamType::asDict()
     {
     pybind11::dict pydict;
     // TODO; pack per-type-pair quantities from the ParamType struct to the Python dictionary.
@@ -80,14 +80,14 @@ pybind11::dict ExamplePairPotential::ParamType::asDict()
 
 namespace detail
     {
-void export_ExamplePairPotential(pybind11::module& m)
+void export_ChiralPairPotential(pybind11::module& m)
     {
-    pybind11::class_<ExamplePairPotential, PairPotential, std::shared_ptr<ExamplePairPotential>>(
+    pybind11::class_<ChiralPairPotential, PairPotential, std::shared_ptr<ChiralPairPotential>>(
         m,
-        "ExamplePairPotential")
+        "ChiralPairPotential")
         .def(pybind11::init<std::shared_ptr<SystemDefinition>>())
-        .def("setParams", &ExamplePairPotential::setParamsPython)
-        .def("getParams", &ExamplePairPotential::getParamsPython);
+        .def("setParams", &ChiralPairPotential::setParamsPython)
+        .def("getParams", &ChiralPairPotential::getParamsPython);
     }
     } // end namespace detail
     } // end namespace hpmc

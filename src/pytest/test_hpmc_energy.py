@@ -3,7 +3,7 @@
 
 """Test the version module."""
 
-import hoomd.hpmc_energy
+import hoomd.hpmc_chiral
 
 import pytest
 
@@ -12,8 +12,8 @@ import pytest
 
 @pytest.mark.cpu
 def test_pair(simulation_factory, two_particle_snapshot_factory):
-    """Test that ExamplePair computes the correct energies for 1 pair."""
-    pair_potential = hoomd.hpmc_energy.ExamplePair()
+    """Test that ChiralPair computes the correct energies for 1 pair."""
+    pair_potential = hoomd.hpmc_chiral.ChiralPair()
     pair_potential.params.default = dict(A=1.0, B=2.0, r_cut=2.0)
     r_sep = 1.5
     expected_energy = 1.0 * (1 - r_sep / 2.0)

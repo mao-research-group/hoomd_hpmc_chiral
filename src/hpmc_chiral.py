@@ -5,12 +5,12 @@
 
 import hoomd
 import hoomd.conftest
-from hoomd.hpmc_energy import _hpmc_energy
+from hoomd.hpmc_chiral import _hpmc_chiral
 
 
-@hoomd.logging.modify_namespace(('hpmc', 'pair', 'ExamplePair'))
-class ExamplePair(hoomd.hpmc.pair.Pair):
-    r"""An example pair potential for HPMC.
+@hoomd.logging.modify_namespace(('hpmc', 'pair', 'ChiralPair'))
+class ChiralPair(hoomd.hpmc.pair.Pair):
+    r"""A chiral pair potential for HPMC.
 
     Args:
         default_r_cut (float): Default cutoff radius :math:`[\mathrm{length}]`.
@@ -19,8 +19,8 @@ class ExamplePair(hoomd.hpmc.pair.Pair):
 
     """
 
-    _cpp_class_name = 'ExamplePairPotential'
-    _ext_module = _hpmc_energy
+    _cpp_class_name = 'ChiralPairPotential'
+    _ext_module = _hpmc_chiral
 
     def __init__(self, default_r_cut=None):
         if default_r_cut is None:

@@ -12,17 +12,13 @@ namespace hoomd
 namespace hpmc
     {
 
-/** Example pair potential for use with HPMC simulations.
-
-    TODO: Rename the "ExamplePairPotential" to a class name that represents your potential.
-    "ExamplePair" appears many times in C++, CMakeLists, and Python files. Consider using a global
-    search and replace tool.
+/** Chiral pair potential for use with HPMC simulations.
  */
-class ExamplePairPotential : public PairPotential
+class ChiralPairPotential : public PairPotential
     {
     public:
-    ExamplePairPotential(std::shared_ptr<SystemDefinition> sysdef);
-    virtual ~ExamplePairPotential() { }
+    ChiralPairPotential(std::shared_ptr<SystemDefinition> sysdef);
+    virtual ~ChiralPairPotential() { }
 
     virtual LongReal energy(const LongReal r_squared,
                             const vec3<LongReal>& r_ij,
