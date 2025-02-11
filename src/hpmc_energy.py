@@ -8,27 +8,6 @@ import hoomd.conftest
 from hoomd.hpmc_energy import _hpmc_energy
 
 
-class ExampleExternal(hoomd.hpmc.external.External):
-    """An example external potential for HPMC.
-
-    TODO: document the class.
-
-    """
-
-    _cpp_class_name = 'ExampleExternalPotential'
-    _ext_module = _hpmc_energy
-
-    def __init__(self):
-        params = hoomd.data.typeparam.TypeParameter(
-            'params',
-            'particle_types',
-            # TODO: Add entries to TypeParameterDict matching those in the C++
-            # ParamType.
-            hoomd.data.parameterdicts.TypeParameterDict(epsilon=float, len_keys=1),
-        )
-        self._add_typeparam(params)
-
-
 @hoomd.logging.modify_namespace(('hpmc', 'pair', 'ExamplePair'))
 class ExamplePair(hoomd.hpmc.pair.Pair):
     r"""An example pair potential for HPMC.

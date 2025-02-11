@@ -3,10 +3,8 @@ set(COMPONENT_NAME hpmc_energy)
 
 # TODO: List all host C++ source code files in _${COMPONENT_NAME}_sources.
 set(_${COMPONENT_NAME}_sources
-    ExampleExternalPotential.cc
     ExamplePairPotential.cc
     module.cc
-    ExampleExternalPotential.h
     ExamplePairPotential.h
     )
 

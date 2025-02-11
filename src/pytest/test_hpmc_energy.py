@@ -26,20 +26,3 @@ def test_pair(simulation_factory, two_particle_snapshot_factory):
     simulation.run(0)
     assert sphere.pair_energy == pytest.approx(expected_energy)
 
-
-@pytest.mark.cpu
-def test_external(simulation_factory, two_particle_snapshot_factory):
-    """Test that ExampleExternal computes the correct energies for 2 particles."""
-    external_potential = hoomd.hpmc_energy.ExampleExternal()
-    external_potential.params.default = dict(epsilon=2)
-
-    r_sep = 1.5
-    expected_energy = 2 * 2 * ((r_sep / 2) ** 2 + 0.1**2)
-
-    simulation = simulation_factory(two_particle_snapshot_factory(d=r_sep))
-    sphere = hoomd.hpmc.integrate.Sphere()
-    sphere.shape['A'] = dict(diameter=0)
-    sphere.external_potentials = [external_potential]
-    simulation.operations.integrator = sphere
-    simulation.run(0)
-    assert sphere.external_energy == pytest.approx(expected_energy)
