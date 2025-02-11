@@ -22,7 +22,7 @@ class ChiralPair(hoomd.hpmc.pair.Pair):
     _cpp_class_name = 'ChiralPairPotential'
     _ext_module = _hpmc_chiral
 
-    def __init__(self, default_r_cut=None):
+    def __init__(self, default_r_cut=None, mode="none"):
         if default_r_cut is None:
             default_r_cut = float
         else:
@@ -38,3 +38,11 @@ class ChiralPair(hoomd.hpmc.pair.Pair):
             ),
         )
         self._add_typeparam(params)
+
+        self._param_dict.update(
+            hoomd.data.parameterdicts.ParameterDict(
+                mode=hoomd.data.typeconverter.OnlyFrom(("none", "cubic"))
+            )
+        )
+        self.mode = mode
+

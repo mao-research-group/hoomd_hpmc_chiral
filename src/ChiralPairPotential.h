@@ -38,6 +38,42 @@ class ChiralPairPotential : public PairPotential
     /// Get type-pair-dependent parameters.
     pybind11::dict getParamsPython(pybind11::tuple particle_types);
 
+    void setMode(const std::string& mode_str)
+        {
+        if (mode_str == "none")
+            {
+            m_mode = none;
+            }
+        else if (mode_str == "cubic")
+            {
+            m_mode = cubic;
+            }
+        else
+            {
+            throw std::domain_error("Invalid mode " + mode_str);
+            }
+        }
+
+    std::string getMode()
+        {
+        std::string result = "none";
+
+        if (m_mode == cubic)
+            {
+            result = "cubic";
+            }
+
+        return result;
+        }
+
+    protected:
+    /// Shifting modes that can be applied to the energy
+    enum SymmetryMode
+        {
+        none = 0,
+        cubic
+        };
+
     protected:
     /// per-type-pair parameters
     struct ParamType
@@ -58,6 +94,8 @@ class ChiralPairPotential : public PairPotential
 
     /// Parameters per type pair.
     std::vector<ParamType> m_params;
+
+    SymmetryMode m_mode = none;
     };
 
 namespace detail

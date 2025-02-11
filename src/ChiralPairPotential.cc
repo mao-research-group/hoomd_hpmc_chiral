@@ -13,7 +13,7 @@ ChiralPairPotential::ChiralPairPotential(std::shared_ptr<SystemDefinition> sysde
     {
     }
 
-std::vector<rotmat3<LongReal>> SymmetryMatrices(){
+std::vector<rotmat3<LongReal>> CubicSymmetries(){
     std::vector<rotmat3<LongReal>> smat_list;
     smat_list.resize(24);  // all initialized as identity matrices
     
@@ -67,11 +67,15 @@ LongReal ChiralPairPotential::energy(const LongReal r_squared,
     rotmat3 rmatj_inv = transpose(rmatj);
 
     LongReal ori_factor;
-    LongReal highest_poss = 8;  // maximum value of ori before shift, ~5.9 for cubic and 8 for no symmetries
-    LongReal current_lowest = 8;
+    LongReal current_lowest = 8; // maximum value of ori before shift, ~5.9 for cubic and 8 for no symmetries
     vec3<LongReal> rhat_ij = r_ij / fast::sqrt(r_squared);
 
-    std::vector<rotmat3<LongReal>> smat_list = SymmetryMatrices();
+    std::vector<rotmat3<LongReal>> smat_list;
+    if (m_mode == cubic){
+        smat_list = CubicSymmetries();
+    } else {
+        smat_list.resize(1);  // identity matrix by default
+    }
     size_t symm_size = smat_list.size();
     for (size_t i = 0; i < symm_size; i++){
 
@@ -152,7 +156,10 @@ void export_ChiralPairPotential(pybind11::module& m)
         "ChiralPairPotential")
         .def(pybind11::init<std::shared_ptr<SystemDefinition>>())
         .def("setParams", &ChiralPairPotential::setParamsPython)
-        .def("getParams", &ChiralPairPotential::getParamsPython);
+        .def("getParams", &ChiralPairPotential::getParamsPython)
+        .def_property("mode",
+            &ChiralPairPotential::getMode,
+            &ChiralPairPotential::setMode);
     }
     } // end namespace detail
     } // end namespace hpmc
