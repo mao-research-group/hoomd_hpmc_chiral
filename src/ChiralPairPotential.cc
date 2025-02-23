@@ -13,42 +13,14 @@ ChiralPairPotential::ChiralPairPotential(std::shared_ptr<SystemDefinition> sysde
     {
     }
 
-std::vector<rotmat3<LongReal>> CubicSymmetries(){
-    std::vector<rotmat3<LongReal>> smat_list;
-    smat_list.resize(24);  // all initialized as identity matrices
+std::vector<quat<LongReal>> CubicSymmetries(){
+    std::vector<quat<LongReal>> squat_list;
+    squat_list.resize(24);  
+    squat_list[0].s = 0;
+    squat_list[0].v = vec3<LongReal>(1, 0, 0);
     
-    std::vector<int> signs = {1, -1};
-    int idx = 0;
-    for (int row0=0; row0<3; row0++){
-        for (auto sign0 : signs){
-            for (auto sign1 : signs){
-                for (auto sign2 : signs){
-                    int row1 = 0;
-                    int row2 = 0;
-                    if ((sign0*sign1*sign2)>0){
-                        row1 = (row0+1)%3;
-                        row2 = (row1+1)%3;
-                    }
-                    else {
-                        row1 = (row0+2)%3;
-                        row2 = (row1+2)%3;
-                    }
-                    smat_list[idx].row0[0] = 0;
-                    smat_list[idx].row1[1] = 0;
-                    smat_list[idx].row2[2] = 0;
-                    smat_list[idx].row0[row0] = sign0;
-                    smat_list[idx].row1[row1] = sign1;
-                    smat_list[idx].row2[row2] = sign2;
-
-                    idx = idx+1;
-                }
-            }
-        }
-    }
-    
-    return smat_list;
+    return squat_list;
 }
-
 
 LongReal ChiralPairPotential::energy(const LongReal r_squared,
                                       const vec3<LongReal>& r_ij,
@@ -62,38 +34,33 @@ LongReal ChiralPairPotential::energy(const LongReal r_squared,
     unsigned int param_index = m_type_param_index(type_i, type_j);
     const auto& param = m_params[param_index];
 
-    rotmat3 rmati(q_i);
-    rotmat3 rmatj(q_j);
-    rotmat3 rmatj_inv = transpose(rmatj);
+    quat qj_inv = conj(q_j);
+    vec3<LongReal> rhat_ij = r_ij / fast::sqrt(r_squared);
+    quat qaa_inv = quat<LongReal>::fromAxisAngle(rhat_ij, -param.m_theta);
+    quat q_rel = q_i*qj_inv*qaa_inv;
 
     LongReal ori_factor;
-    LongReal current_lowest = 8; // maximum value of ori before shift, ~5.9 for cubic and 8 for no symmetries
-    vec3<LongReal> rhat_ij = r_ij / fast::sqrt(r_squared);
+    LongReal current_highest = 0; // minimum value of q_s^2
 
-    std::vector<rotmat3<LongReal>> smat_list;
+    std::vector<quat<LongReal>> squat_list;
     if (m_mode == cubic){
-        smat_list = CubicSymmetries();
+        squat_list = CubicSymmetries();
     } else {
-        smat_list.resize(1);  // identity matrix by default
+        squat_list.resize(1);  // identity quat by default
     }
-    size_t symm_size = smat_list.size();
+
+    size_t symm_size = squat_list.size();
     for (size_t i = 0; i < symm_size; i++){
-
-        rotmat3 rmat_times = rmati * smat_list[i];
-        rmat_times = rmat_times * rmatj_inv;
-
-        rotmat3 rmat_bet = rmati.fromAxisAngle(rhat_ij, param.m_theta);   
-
-        vec3<LongReal> row0 = rmat_times.row0 - rmat_bet.row0;
-        vec3<LongReal> row1 = rmat_times.row1 - rmat_bet.row1;
-        vec3<LongReal> row2 = rmat_times.row2 - rmat_bet.row2;
-        ori_factor = dot(row0, row0) + dot(row1, row1) + dot(row2, row2);
-        if (ori_factor<current_lowest){
-            current_lowest = ori_factor;
+        quat sym_q_rel = squat_list[i] * q_rel;
+        ori_factor = sym_q_rel.s * sym_q_rel.s;
+        if (ori_factor>current_highest){
+            current_highest = ori_factor;
         }
     }
-    ori_factor = param.m_alpha - current_lowest; // Range moved from 0:max to alpha:alpha-max
-    LongReal energy = param.m_epsilon * ori_factor; // epsilon should be negative usually
+    // 4(1-cos(ang)) = 4(1-(2cos^2(ang/2)-1)) = 8(1-q_s^2)
+    current_highest = LongReal(8.0) * (LongReal(1.0) - current_highest);
+    LongReal shifted_factor = param.m_alpha - current_highest; // Range moved from 0:max to alpha:alpha-max
+    LongReal energy = param.m_epsilon * shifted_factor; // epsilon should be negative usually
 
     return energy;
     }
