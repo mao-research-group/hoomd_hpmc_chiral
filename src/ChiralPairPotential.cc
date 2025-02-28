@@ -64,7 +64,7 @@ std::vector<quat<LongReal>> CubicSymmetries(){
     //for (int i=0; i<24; i++){
     //    std::cout<<squat_list[i].s<<" "<<squat_list[i].v.x<<" "<<squat_list[i].v.y<<" "<<squat_list[i].v.z<<"||";
     //}
-    std::cout<<std::endl;
+    //std::cout<<std::endl;
     return squat_list;
 }
 
