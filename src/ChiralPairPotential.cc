@@ -15,10 +15,56 @@ ChiralPairPotential::ChiralPairPotential(std::shared_ptr<SystemDefinition> sysde
 
 std::vector<quat<LongReal>> CubicSymmetries(){
     std::vector<quat<LongReal>> squat_list;
+    // Note there are only 24 and -1*quat doesnt change its rotation
     squat_list.resize(24);  
-    squat_list[0].s = 0;
-    squat_list[0].v = vec3<LongReal>(1, 0, 0);
-    
+    // First four are placing 1 in different single spots
+    squat_list[0].s = 1;
+    squat_list[0].v = vec3<LongReal>(0, 0, 0);
+    squat_list[1].s = 0;
+    squat_list[1].v = vec3<LongReal>(1, 0, 0);
+    squat_list[2].s = 0;
+    squat_list[2].v = vec3<LongReal>(0, 1, 0);
+    squat_list[3].s = 0;
+    squat_list[3].v = vec3<LongReal>(0, 0, 1);
+    // Next eight are placing + or - 1/2 in different four spots
+    int quat_idx = 4;
+    std::vector<int> signs = {1, -1};
+    LongReal half=0.5;
+    for (auto sign0 : signs){
+        for (auto sign1 : signs){
+            for (auto sign2 : signs){
+                squat_list[quat_idx].s = half;  // this may be always positive
+                squat_list[quat_idx].v = vec3<LongReal>(sign0*half, sign1*half, sign2*half);
+                quat_idx++;
+            }
+        }
+    }
+    // Final 12 are placing ++ or +- sqrt(1/2) in six different combinations 
+    LongReal sqrthalf = fast::sqrt(half);
+    for (auto sign : signs){
+        squat_list[quat_idx].s = sqrthalf;  // This may as well be the constant positive
+        squat_list[quat_idx].v = vec3<LongReal>(sign*sqrthalf, 0, 0);
+        quat_idx++;
+        squat_list[quat_idx].s = sqrthalf;
+        squat_list[quat_idx].v = vec3<LongReal>(0, sign*sqrthalf, 0);
+        quat_idx++;
+        squat_list[quat_idx].s = sqrthalf;
+        squat_list[quat_idx].v = vec3<LongReal>(0, 0, sign*sqrthalf);
+        quat_idx++;
+        squat_list[quat_idx].s = 0;
+        squat_list[quat_idx].v = vec3<LongReal>(sign*sqrthalf, sqrthalf, 0);
+        quat_idx++;
+        squat_list[quat_idx].s = 0;
+        squat_list[quat_idx].v = vec3<LongReal>(sign*sqrthalf, 0, sqrthalf);
+        quat_idx++;
+        squat_list[quat_idx].s = 0;
+        squat_list[quat_idx].v = vec3<LongReal>(0, sign*sqrthalf, sqrthalf);
+        quat_idx++;
+    }
+    //for (int i=0; i<24; i++){
+    //    std::cout<<squat_list[i].s<<" "<<squat_list[i].v.x<<" "<<squat_list[i].v.y<<" "<<squat_list[i].v.z<<"||";
+    //}
+    std::cout<<std::endl;
     return squat_list;
 }
 
